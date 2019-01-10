@@ -20,7 +20,7 @@ public class Movement : MonoBehaviour
     [SerializeField] ParticleSystem winEffect;
     [SerializeField] GameObject engineLight; //betere methode zoeken
 
-    enum State { Alive, Dying, Transcending};
+    enum State { Alive, Dying, Transcending}; //overengineered for practice reasons
     State state = State.Alive;
 
     public bool collisionSwitch = false;
@@ -111,19 +111,26 @@ public class Movement : MonoBehaviour
 
         float rotationThisFrame = rotationThrust * Time.deltaTime;
 
-        myRigidBody.freezeRotation = true; //take manual control of rotation
         if (Input.GetKey(KeyCode.A))
         {
             //rotate left
+            FreezeRotationSwitch(); //take manual control of rotation
             transform.Rotate(Vector3.forward * rotationThisFrame);
+            FreezeRotationSwitch(); //give control back to physics
         }
         if (Input.GetKey(KeyCode.D))
         {
             //rotate right
+            FreezeRotationSwitch();
             transform.Rotate(Vector3.back * rotationThisFrame);
+            FreezeRotationSwitch();
         }
-        myRigidBody.freezeRotation = false; //physics take over again
 
+    }
+
+    private void FreezeRotationSwitch()
+    {
+        myRigidBody.freezeRotation = !myRigidBody.freezeRotation;
     }
 
     private void OnCollisionEnter(Collision collision)

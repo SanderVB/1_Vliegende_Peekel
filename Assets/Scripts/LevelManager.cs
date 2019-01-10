@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     int currentSceneIndex;
+    bool sceneUpdated = false;
 
     private void Awake()
     {
@@ -23,33 +24,41 @@ public class LevelManager : MonoBehaviour
     }
     private void Start()
     {
-        StartCoroutine(UpdateSceneIndex());
+        UpdateSceneIndex();
+    }
+
+    private void Update()
+    {
+        if (!sceneUpdated)
+            UpdateSceneIndex();
     }
 
     public void LoadNextLevel()
     {
-        SceneManager.LoadScene(currentSceneIndex + 1);
-        StartCoroutine(UpdateSceneIndex());
+        sceneUpdated = false;
+        if (currentSceneIndex < SceneManager.sceneCountInBuildSettings -1)
+            SceneManager.LoadScene(currentSceneIndex + 1);
+        else
+            SceneManager.LoadScene(0);
     }
 
     public void LoadPreviousLevel()
     {
+        sceneUpdated = false;
         if (currentSceneIndex < 1)
-            currentSceneIndex = 1;
-        SceneManager.LoadScene(currentSceneIndex - 1);
-        StartCoroutine(UpdateSceneIndex());
+            SceneManager.LoadScene(currentSceneIndex);
+        else
+            SceneManager.LoadScene(currentSceneIndex - 1);
     }
 
     public void RestartLevel()
     {
+        sceneUpdated = false;
         SceneManager.LoadScene(currentSceneIndex);
-        StartCoroutine(UpdateSceneIndex());
     }
 
-    IEnumerator UpdateSceneIndex()
+    private void UpdateSceneIndex()
     {
-        yield return 0;
-        if(currentSceneIndex<SceneManager.sceneCount) //%
             currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
     }
 }
